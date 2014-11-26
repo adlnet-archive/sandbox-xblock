@@ -1,0 +1,9 @@
+/* CSS for SandBlock */
+
+.sandblock_block .count {
+    font-weight: bold;
+}
+
+.sandblock_block p {
+    cursor: pointer;
+}
