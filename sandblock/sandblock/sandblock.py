@@ -1,10 +1,11 @@
 """TO-DO: Write a description of what this XBlock is."""
 
-import pkg_resources
+import pkg_resources, json
 
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer, String
+from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
+from webob.response import Response
 
 
 class SandBlock(XBlock):
@@ -15,17 +16,13 @@ class SandBlock(XBlock):
 	# Fields are defined on the class.  You can access them in your code as
 	# self.<fieldname>.
 
-	# TO-DO: delete count, and define your own fields.
-	count = Integer(
-		default=0, scope=Scope.user_state,
-		help="A simple counter, to show something happening",
-	)
-
 	url = String(
-		default = 'https://sandbox.adlnet.gov/adl/sandbox/TtcdOKlmaKwpxTCi/',
+		default = 'http://ec2-54-173-64-18.compute-1.amazonaws.com:3000/adl/sandbox/Fr7zUN4vwmK3ToGB/',
 		scope = Scope.settings,
 		help = 'The URL to the virtual world you want to embed'
 	)
+
+	has_score = True
 
 	def resource_string(self, path):
 		"""Handy helper for getting resources from our kit."""
@@ -42,24 +39,25 @@ class SandBlock(XBlock):
 		frag = Fragment(html.format(self=self))
 		frag.add_css(self.resource_string("static/css/sandblock.css"))
 		frag.add_javascript(self.resource_string("static/js/src/sandblock.js"))
+		frag.add_javascript(self.resource_string("static/js/jschannel.js"))
 		frag.initialize_js('SandBlock')
 		return frag
 
-	# TO-DO: change this handler to perform your own actions.  You may need more
-	# than one handler, or you may not need any handlers at all.
 	@XBlock.json_handler
-	def increment_count(self, data, suffix=''):
-		"""
-		An example handler, which increments the data.
-		"""
-		# Just to show data coming in...
-		assert data['hello'] == 'world'
+	def receive_grade(self, data, suffix=''):
 
-		self.count += 1
-		return {"count": self.count}
+		#module = StudentModule.objects.get(pk=request.params['module_id'])
+		#state = json.loads(module.state)
+		#state['score']
 
-	# TO-DO: change this to create the scenarios you'd like to see in the
-	# workbench while developing your XBlock.
+		self.runtime.publish('grade', {
+			'value': 1 if data['grade'] else 0,
+			'max_value': 1
+		})
+
+		return {'success': True}
+
+
 	@staticmethod
 	def workbench_scenarios():
 		"""A canned scenario for display in the workbench."""

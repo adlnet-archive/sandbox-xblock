@@ -1,20 +1,39 @@
 /* Javascript for SandBlock. */
 function SandBlock(runtime, element) {
 
-	function updateCount(result) {
+	/*function updateCount(result) {
 		$('.count', element).text(result.count);
-	}
+	}*/
 
-	var handlerUrl = runtime.handlerUrl(element, 'increment_count');
+	var chan = Channel.build({
+		window: element.querySelector('iframe').contentWindow,
+		origin: '*',
+		scope: 'JSInput'
+	});
 
-	$('p', element).click(function(eventObject) {
-		$.ajax({
-			type: "POST",
-			url: handlerUrl,
-			data: JSON.stringify({"hello": "world"}),
-			success: updateCount
+	var handlerUrl = runtime.handlerUrl(element, 'receive_grade');
+
+	console.log('Registering handler on', $('input',element));
+	$('input', element).click(function(eventObject) {
+
+		console.log('Fetching grade...');
+		chan.call({
+			method: 'getGrade',
+			success: function(grade)
+			{
+				console.log('Received grade:', grade);
+				$.ajax({
+					type: "POST",
+					url: handlerUrl,
+					data: JSON.stringify({"grade": grade}),
+					success: function(){
+						console.log('Grade published');
+					}
+				});
+			}
 		});
 	});
+
 	$('iframe', element).css('height','500');
 	$('iframe', element).css('width','700');
 	$('iframe', element).css('border','10px solid white');
