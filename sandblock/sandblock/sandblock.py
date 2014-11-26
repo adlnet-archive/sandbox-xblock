@@ -46,9 +46,11 @@ class SandBlock(XBlock):
 	@XBlock.json_handler
 	def receive_grade(self, data, suffix=''):
 
-		#module = StudentModule.objects.get(pk=request.params['module_id'])
+		#module = StudentModule.objects.get(pk=self.module_id)
 		#state = json.loads(module.state)
 		#state['score']
+
+		print data
 
 		self.runtime.publish('grade', {
 			'value': 1 if data['grade'] else 0,

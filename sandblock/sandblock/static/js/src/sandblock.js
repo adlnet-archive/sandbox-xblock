@@ -13,23 +13,26 @@ function SandBlock(runtime, element) {
 
 	var handlerUrl = runtime.handlerUrl(element, 'receive_grade');
 
-	console.log('Registering handler on', $('input',element));
 	$('input', element).click(function(eventObject) {
 
 		console.log('Fetching grade...');
 		chan.call({
 			method: 'getGrade',
+			params: null,
 			success: function(grade)
 			{
+				grade = JSON.parse(grade);
 				console.log('Received grade:', grade);
-				$.ajax({
-					type: "POST",
-					url: handlerUrl,
-					data: JSON.stringify({"grade": grade}),
-					success: function(){
-						console.log('Grade published');
-					}
-				});
+				if(grade !== null){
+					$.ajax({
+						type: "POST",
+						url: handlerUrl,
+						data: JSON.stringify({"grade": grade}),
+						success: function(){
+							console.log('Grade published');
+						}
+					});
+				}
 			}
 		});
 	});
