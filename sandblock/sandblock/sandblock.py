@@ -52,7 +52,7 @@ class SandBlock(XBlock):
 
 		print data
 
-		self.runtime.publish('grade', {
+		self.runtime.publish(self, 'grade', {
 			'value': 1 if data['grade'] else 0,
 			'max_value': 1
 		})
