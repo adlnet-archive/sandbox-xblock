@@ -13,8 +13,17 @@ class SandBlock(XBlock):
 	TO-DO: document what your XBlock does.
 	"""
 
+	has_score = True
+	icon_class = 'problem'
+	weight = 1
+
 	# Fields are defined on the class.  You can access them in your code as
 	# self.<fieldname>.
+	display_name = String(
+		default = 'Virtual World Sandbox',
+		scope = Scope.settings,
+		help = 'The name of this component'
+	)
 
 	url = String(
 		default = 'http://ec2-54-173-64-18.compute-1.amazonaws.com:3000/adl/sandbox/Fr7zUN4vwmK3ToGB/',
@@ -22,7 +31,18 @@ class SandBlock(XBlock):
 		help = 'The URL to the virtual world you want to embed'
 	)
 
-	has_score = True
+	score = Integer(
+		default = 0,
+		scope = Scope.user_state,
+		help = 'The graded score of this component'
+	)
+
+	max_score = Integer(
+		default = 1,
+		scope = Scope.settings,
+		help = 'The maximum score for this component'
+	)
+
 
 	def resource_string(self, path):
 		"""Handy helper for getting resources from our kit."""
@@ -46,19 +66,28 @@ class SandBlock(XBlock):
 	@XBlock.json_handler
 	def receive_grade(self, data, suffix=''):
 
-		#module = StudentModule.objects.get(pk=self.module_id)
-		#state = json.loads(module.state)
-		#state['score']
-
-		print data
+		self.score = 1 if data['grade'] else 0
+		self.max_score = 1
 
 		self.runtime.publish(self, 'grade', {
-			'value': 1 if data['grade'] else 0,
-			'max_value': 1
+			'value': self.score,
+			'max_value': self.max_score
 		})
 
 		return {'success': True}
 
+	def get_score(self):
+
+		return {
+			'score': self.score,
+			'total': self.max_score
+		}
+
+	def max_score(self):
+		return self.max_score
+
+	def get_progress(self):
+		return None
 
 	@staticmethod
 	def workbench_scenarios():
