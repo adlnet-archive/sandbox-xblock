@@ -14,7 +14,7 @@ function SandBlock(runtime, element) {
 	$(function ($) {
 		/* Here's where you'd do things on page load. */
 
-		var handlerUrl = runtime.handlerUrl(element, 'receive_grade');
+		$('iframe', element).attr('src', runtime.handlerUrl(element, 'serve_placeholder'));
 
 		$('input', element).click(function(eventObject) {
 
@@ -29,7 +29,7 @@ function SandBlock(runtime, element) {
 					if(grade !== null){
 						$.ajax({
 							type: "POST",
-							url: handlerUrl,
+							url: runtime.handlerUrl(element, 'receive_grade'),
 							data: JSON.stringify({"grade": grade}),
 							success: function(){
 								console.log('Grade published');
@@ -40,7 +40,7 @@ function SandBlock(runtime, element) {
 			});
 		});
 
-		$('iframe', element).css('height','500');
+		/*$('iframe', element).css('height','500');
 		$('iframe', element).css('width','700');
 		$('iframe', element).css('border','10px solid white');
 		$('iframe', element).css('box-shadow','0px 0px 80px gray');
@@ -112,7 +112,7 @@ function SandBlock(runtime, element) {
 					}
 				);
 			},1500);
-		});
+		});*/
  
 	});
 }

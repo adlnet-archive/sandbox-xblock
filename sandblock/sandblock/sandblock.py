@@ -76,6 +76,12 @@ class SandBlock(XBlock):
 
 		return {'success': True}
 
+	@XBlock.handler
+	def serve_placeholder(self, request, suffix=''):
+
+		html = self.resource_string('static/html/placeholder.html')
+		return Response(body=html.format(self=self))
+
 	def get_score(self):
 
 		return {
