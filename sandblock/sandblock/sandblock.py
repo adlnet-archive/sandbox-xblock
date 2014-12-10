@@ -32,7 +32,7 @@ class SandBlock(XBlock):
 	)
 
 	score = Integer(
-		default = 0,
+		default = -1,
 		scope = Scope.user_state,
 		help = 'The graded score of this component'
 	)
@@ -63,18 +63,21 @@ class SandBlock(XBlock):
 		frag.initialize_js('SandBlock')
 		return frag
 
-	@XBlock.json_handler
-	def receive_grade(self, data, suffix=''):
+	@XBlock.handler
+	def query_grade(self, request, suffix=''):
 
-		self.score = 1 if data['grade'] else 0
-		self.max_score = 1
+		print request
+		print self.max_score()
+		#if data:
+		#	self.score = 1 if data['grade'] else 0
+		#	self.max_score = 1
 
-		self.runtime.publish(self, 'grade', {
-			'value': self.score,
-			'max_value': self.max_score
-		})
+		#	self.runtime.publish(self, 'grade', {
+		#		'value': self.score,
+		#		'max_value': self.max_score
+		#	})
 
-		return {'success': True}
+		return Response(json_body={'value': repr(self.score), 'max_value': repr(self.max_score)})
 
 	@XBlock.handler
 	def serve_placeholder(self, request, suffix=''):

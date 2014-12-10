@@ -11,9 +11,37 @@ function SandBlock(runtime, element) {
 		scope: 'JSInput'
 	});
 
+	function updateCheck(grade)
+	{
+		var correct_icon = '/static/images/correct-icon.png';
+		var incorrect_icon = '/static/images/incorrect-icon.png';
+
+		if( !grade )
+		{
+			$.ajax({
+				type: 'GET',
+				url: runtime.handlerUrl(element, 'query_grade'),
+				success: updateCheck
+			});
+		}
+		else
+		{
+			if( grade.value === grade.max_value ){	
+				$('#checkButton + img', element).attr('src', correct_icon);
+			}
+			else if( grade.value === -1 ){
+				$('#checkButton + img', element).attr('src', '');
+			}
+			else {
+				$('#checkButton + img', element).attr('src', incorrect_icon);
+			}
+		}
+	}
+
 	$(function ($) {
 		/* Here's where you'd do things on page load. */
 
+		updateCheck();
 		$('iframe', element).attr('src', runtime.handlerUrl(element, 'serve_placeholder'));
 
 		$('input', element).click(function(eventObject) {
@@ -29,10 +57,11 @@ function SandBlock(runtime, element) {
 					if(grade !== null){
 						$.ajax({
 							type: "POST",
-							url: runtime.handlerUrl(element, 'receive_grade'),
+							url: runtime.handlerUrl(element, 'query_grade'),
 							data: JSON.stringify({"grade": grade}),
-							success: function(){
+							success: function(data){
 								console.log('Grade published');
+								updateCheck(data);
 							}
 						});
 					}
