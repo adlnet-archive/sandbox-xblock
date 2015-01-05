@@ -1,6 +1,6 @@
 """TO-DO: Write a description of what this XBlock is."""
 
-import pkg_resources, json
+import pkg_resources, json, os, mimetypes
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
@@ -58,7 +58,7 @@ class SandBlock(XBlock):
 		html = self.resource_string("static/html/sandblock.html")
 		frag = Fragment(html.format(self=self))
 		frag.add_css(self.resource_string("static/css/sandblock.css"))
-		frag.add_javascript(self.resource_string("static/js/src/sandblock.js"))
+		frag.add_javascript(self.resource_string("static/js/sandblock.js"))
 		frag.add_javascript(self.resource_string("static/js/jschannel.js"))
 		frag.initialize_js('SandBlock')
 		return frag
@@ -66,24 +66,37 @@ class SandBlock(XBlock):
 	@XBlock.handler
 	def query_grade(self, request, suffix=''):
 
-		print request
-		print self.max_score()
-		#if data:
-		#	self.score = 1 if data['grade'] else 0
-		#	self.max_score = 1
+		#print request
+		#print self.max_score()
+		if request.method == 'POST':
 
-		#	self.runtime.publish(self, 'grade', {
-		#		'value': self.score,
-		#		'max_value': self.max_score
-		#	})
+			try:
+				data = json.loads(request.body)
+			except e:
+				return Response(status=500, body='Could not parse request body as JSON')
+
+			self.score = 1 if data['grade'] else 0
+			self.max_score = 1
+
+			self.runtime.publish(self, 'grade', {
+				'value': self.score,
+				'max_value': self.max_score
+			})
 
 		return Response(json_body={'value': repr(self.score), 'max_value': repr(self.max_score)})
 
 	@XBlock.handler
-	def serve_placeholder(self, request, suffix=''):
+	def static(self, request, suffix=''):
+		filename = os.path.join( os.path.dirname(__file__), 'static', suffix )
+		print filename
+		try:
+			res = Response(content_type=mimetypes.guess_type(filename)[0])
+			res.body = open(filename,'rb').read()
+			return res
 
-		html = self.resource_string('static/html/placeholder.html')
-		return Response(body=html.format(self=self))
+		except Exception as e:
+			print e
+			return Response(status=404)
 
 	def get_score(self):
 

@@ -4,7 +4,7 @@ function SandBlock(runtime, element) {
 	/*function updateCount(result) {
 		$('.count', element).text(result.count);
 	}*/
-
+	//debugger;
 	var chan = Channel.build({
 		window: element.querySelector('iframe').contentWindow,
 		origin: '*',
@@ -13,8 +13,8 @@ function SandBlock(runtime, element) {
 
 	function updateCheck(grade)
 	{
-		var correct_icon = '/static/images/correct-icon.png';
-		var incorrect_icon = '/static/images/incorrect-icon.png';
+		var correct_icon = runtime.handlerUrl(element, 'static', 'img/correct-icon.png');
+		var incorrect_icon = runtime.handlerUrl(element, 'static', 'img/incorrect-icon.png');
 
 		if( !grade )
 		{
@@ -42,7 +42,7 @@ function SandBlock(runtime, element) {
 		/* Here's where you'd do things on page load. */
 
 		updateCheck();
-		$('iframe', element).attr('src', runtime.handlerUrl(element, 'serve_placeholder'));
+		$('iframe', element).attr('src', runtime.handlerUrl(element, 'static', 'html/placeholder.html'));
 
 		$('input', element).click(function(eventObject) {
 
