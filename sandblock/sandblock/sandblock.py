@@ -37,7 +37,7 @@ class SandBlock(XBlock):
 		help = 'The graded score of this component'
 	)
 
-	max_score = Integer(
+	maxscore = Integer(
 		default = 1,
 		scope = Scope.settings,
 		help = 'The maximum score for this component'
@@ -76,37 +76,43 @@ class SandBlock(XBlock):
 				return Response(status=500, body='Could not parse request body as JSON')
 
 			self.score = 1 if data['grade'] else 0
-			self.max_score = 1
+			self.maxscore = 1
 
 			self.runtime.publish(self, 'grade', {
 				'value': self.score,
-				'max_value': self.max_score
+				'max_value': self.maxscore
 			})
 
-		return Response(json_body={'value': repr(self.score), 'max_value': repr(self.max_score)})
+		return Response(json_body={'value': repr(self.score), 'max_value': repr(self.maxscore)})
 
 	@XBlock.handler
 	def static(self, request, suffix=''):
 		filename = os.path.join( os.path.dirname(__file__), 'static', suffix )
-		print filename
+		mime = mimetypes.guess_type(filename)[0]
+		content = None
 		try:
-			res = Response(content_type=mimetypes.guess_type(filename)[0])
-			res.body = open(filename,'rb').read()
-			return res
+			content = open(filename,'rb').read()
 
 		except Exception as e:
 			print e
 			return Response(status=404)
+		else:
+			res = Response(content_type=mime)
+			if mime.startswith('text'):
+				res.body = content.format(self=self)
+			else:
+				res.body = content
+			return res
 
 	def get_score(self):
 
 		return {
 			'score': self.score,
-			'total': self.max_score
+			'total': self.maxscore
 		}
 
 	def max_score(self):
-		return self.max_score
+		return self.maxscore
 
 	def get_progress(self):
 		return None
