@@ -76,7 +76,7 @@ class SandBlock(XBlock):
 				return Response(status=500, body='Could not parse request body as JSON')
 
 			self.score = 1 if data['grade'] else 0
-			self.maxscore = 1
+			#self.maxscore = 1
 
 			self.runtime.publish(self, 'grade', {
 				'value': self.score,

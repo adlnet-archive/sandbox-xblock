@@ -1,10 +1,6 @@
 /* Javascript for SandBlock. */
 function SandBlock(runtime, element) {
 
-	/*function updateCount(result) {
-		$('.count', element).text(result.count);
-	}*/
-	//debugger;
 	var chan = Channel.build({
 		window: element.querySelector('iframe').contentWindow,
 		origin: '*',
@@ -43,8 +39,38 @@ function SandBlock(runtime, element) {
 
 		updateCheck();
 		$('iframe', element).attr('src', runtime.handlerUrl(element, 'static', 'html/placeholder.html'));
+		$('.sandbox_container span.fsbutton', element).click(function(evt)
+		{
+			var container = $('.sandbox_container', element)[0];
 
-		$('input', element).click(function(eventObject) {
+			var requestFullscreen = container.requestFullscreen
+				|| container.mozRequestFullScreen
+				|| container.webkitRequestFullscreen
+				|| container.msRequestFullscreen
+				|| function(){console.log('Fullscreen not supported');};
+
+			var exitFullscreen = document.exitFullscreen
+				|| document.mozCancelFullScreen
+				|| document.webkitExitFullscreen
+				|| document.msExitFullscreen
+				|| function(){console.log('Fullscreen not supported');};
+
+			var fullscreenElement = document.fullscreenElement
+				|| document.mozFullScreenElement
+				|| document.webkitFullscreenElement
+				|| document.msFullscreenElement
+				|| null;
+
+			if( !fullscreenElement ){
+				requestFullscreen.call(container);
+			}
+			else {
+				exitFullscreen.call(document);
+			}
+		});
+
+
+		$('input#checkButton', element).click(function(eventObject) {
 
 			console.log('Fetching grade...');
 			chan.call({

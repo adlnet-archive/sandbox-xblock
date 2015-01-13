@@ -1,9 +1,44 @@
 /* CSS for SandBlock */
 
-.sandblock_block .count {
-    font-weight: bold;
+.sandbox_container {
+	position: relative;
+	width: 100%;
+	height: 100%;
 }
 
-.sandblock_block p {
-    cursor: pointer;
+.sandbox_container:before {
+	content: "";
+	display: block;
+	padding-top: 75%;
+}
+
+.sandbox_container .fsbutton {
+	position: absolute;
+	top: 5px;
+	right: 6%;
+	padding: 5px 8px;
+	z-index: 1;
+	border: solid black 1px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.sandbox_container iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.sandblock_block input {
+	margin: 10px;
+	margin-left: 0;
+}
+
+.sandblock_block .flexrow {
+	display: flex;
+	align-items: center;
 }
